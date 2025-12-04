@@ -21,4 +21,4 @@ def chat_with_messages(messages, max_tokens=512, temperature=0.2):
         temperature=temperature
     )
 
-return resp['choices'][0]['message']['content']
+    return resp['choices'][0]['message']['content']
