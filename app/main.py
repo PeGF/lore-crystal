@@ -6,7 +6,7 @@ from app.store import add_text, retrieve
 from app.prompts import oracle_prompt, summarize_sessions_prompt, PERSONA_SYSTEM, RAG_TEMPLATE
 import uvicorn
 
-app = FastAPI(title="LoreCrystal - Oráculo da Campanha (MVP)")
+app = FastAPI(title="Oráculo LoreCrystal")
 
 class UploadPayload(BaseModel):
     name: str
@@ -31,11 +31,10 @@ async def ask_oracle(payload: AskPayload):
     hits = retrieve(q_emb, top_k=payload.top_k)
     contexts = ""
     for h in hits:
-        contexts += f"- {h['name']}: {h['text_path']}\n"
-        # le o texto para incluir no contexto (pequeno)
+        contexts += f"### {h['name']}\n"
         try:
             with open(h['text_path'], "r", encoding="utf-8") as f:
-                txt = f.read(2000)  # só primeiros chars
+                txt = f.read(2000)
         except Exception:
             txt = ""
         contexts += txt + "\n\n"
