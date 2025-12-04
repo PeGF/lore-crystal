@@ -5,8 +5,17 @@ from app.ai_client import create_embedding, chat_with_messages
 from app.store import add_text, retrieve
 from app.prompts import oracle_prompt, summarize_sessions_prompt, PERSONA_SYSTEM, RAG_TEMPLATE
 import uvicorn
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="Oráculo LoreCrystal")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 class UploadPayload(BaseModel):
     name: str
@@ -48,8 +57,9 @@ class SummPayload(BaseModel):
 
 @app.post("/summarize-sessions")
 def summarize_sessions(limit: int = 3):
-    session_files = [...]  
+    session_files = []  
 
+    texts = []
     combined_text = "\n\n".join(
         [f"=== {name} ===\n{text}" for name, text in texts]
     )
