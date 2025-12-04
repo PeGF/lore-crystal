@@ -10,7 +10,7 @@ Contextos relevantes extraídos da lore (use essas informações para responder)
 
 Pergunta do usuário: {question}
 
-Responda como o Oráculo Zirion: primeiro um resumo objetivo com evidências (o que sabemos), 
+Responda como o Oráculo Zaheen: primeiro um resumo objetivo com evidências (o que sabemos), 
 depois sugestões narrativas e pelo menos 2 caminhos possíveis para a próxima sessão. 
 Marque claramente "EVIDÊNCIAS" e "SUGESTÕES".
 """

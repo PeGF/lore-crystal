@@ -1,7 +1,7 @@
 from fastapi import FastAPI, UploadFile, File, Form
 from pydantic import BaseModel
 from typing import List
-from app.openai_client import create_embedding, chat_with_messages
+from app.ai_client import create_embedding, chat_with_messages
 from app.store import add_text, retrieve
 from app.prompts import PERSONA_SYSTEM, RAG_TEMPLATE
 import uvicorn
