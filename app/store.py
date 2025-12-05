@@ -7,7 +7,7 @@ from pathlib import Path
 DATA_PATH = Path("data")
 EMB_FILE = DATA_PATH / "embeddings.json"
 TEXTS_DIR = DATA_PATH / "texts"
-
+SESSIONS_DIR = "data/texts"
 DATA_PATH.mkdir(exist_ok=True)
 TEXTS_DIR.mkdir(exist_ok=True)
 
@@ -55,3 +55,30 @@ def retrieve(query_embedding: List[float], top_k: int = 3):
         scored.append((score, it))
     scored.sort(key=lambda x: x[0], reverse=True)
     return [it for score, it in scored[:top_k]]
+
+def load_last_sessions(limit: int = 3):
+    """
+    Lê os últimos `limit` arquivos de sessão armazenados em data/texts/.
+    Os arquivos devem ser nomeados como session-01.txt, session-02.txt, etc.
+    """
+    try:
+        files = sorted(
+            [f for f in os.listdir(SESSIONS_DIR) if f.endswith(".txt")],
+            reverse=True  # mais recentes primeiro
+        )
+    except FileNotFoundError:
+        return []
+
+    files = files[:limit]
+
+    sessions = []
+    for fname in files:
+        path = os.path.join(SESSIONS_DIR, fname)
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                txt = f.read()
+            sessions.append((fname.replace(".txt", ""), txt))
+        except Exception:
+            continue
+
+    return sessions

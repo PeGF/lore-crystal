@@ -1,11 +1,13 @@
+import os
 from fastapi import FastAPI, UploadFile, File, Form
 from pydantic import BaseModel
 from typing import List
 from app.ai_client import create_embedding, chat_with_messages
-from app.store import add_text, retrieve
-from app.prompts import oracle_prompt, summarize_sessions_prompt, PERSONA_SYSTEM, RAG_TEMPLATE
+from app.store import add_text, retrieve, load_last_sessions
+from app.prompts import oracle_prompt, summarize_sessions_prompt, PERSONA_SYSTEM
 import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
+DASHBOARD_PATH = "data/dashboard/dashboard.md"
 
 app = FastAPI(title="Oráculo LoreCrystal")
 
@@ -55,21 +57,33 @@ async def ask_oracle(payload: AskPayload):
 class SummPayload(BaseModel):
     session_text: str
 
-@app.post("/summarize-sessions")
-def summarize_sessions(limit: int = 3):
-    session_files = []  
+@app.post("/update-dashboard")
+def update_dashboard(limit: int = 3):
+    try:
+        with open(DASHBOARD_PATH, "r", encoding="utf-8") as f:
+            old_panel = f.read()
+    except FileNotFoundError:
+        old_panel = ""
 
-    texts = []
-    combined_text = "\n\n".join(
+    texts = load_last_sessions(limit)
+
+    new_sessions = "\n\n".join(
         [f"=== {name} ===\n{text}" for name, text in texts]
     )
 
-    messages = summarize_sessions_prompt(combined_text)
-    summary = chat_with_messages(messages)
+    messages = summarize_sessions_prompt(old_panel, new_sessions)
+
+    new_panel = chat_with_messages(messages)
+
+    os.makedirs("data/dashboard", exist_ok=True)
+    with open(DASHBOARD_PATH, "w", encoding="utf-8") as f:
+        f.write(new_panel)
 
     return {
-        "sessions_included": [name for name, _ in texts],
-        "summary": summary
+        "status": "ok",
+        "updated": True,
+        "sessions_added": [name for name, _ in texts],
+        "panel": new_panel
     }
 
 if __name__ == "__main__":
