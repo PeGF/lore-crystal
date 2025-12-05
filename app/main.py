@@ -86,5 +86,15 @@ def update_dashboard(limit: int = 3):
         "panel": new_panel
     }
 
+@app.get("/dashboard")
+def get_dashboard():
+    try:
+        with open("data/dashboard/painel_atual.md", "r") as f:
+            panel = f.read()
+    except FileNotFoundError:
+        panel = ""
+    return {"panel": panel}
+
+
 if __name__ == "__main__":
     uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)
