@@ -37,7 +37,7 @@ python -m venv .venv
 source .venv/bin/activate
 ```
 
-### Install dependecies:
+### Install dependencies:
 
 ```bash
 pip install -r requirements.txt
@@ -54,6 +54,36 @@ GROQ_API_KEY=your-key
 uvicorn app.main:app --reload --port 8000
 ```
 Server will be available at: http://localhost:8000
+
+### Using Docker Compose
+
+There is a `docker-compose.yaml` at the repository root that defines `backend` and `frontend` services. Use Docker Compose to build and run both services together.
+
+- Build and start services (Docker Compose v2+):
+
+```bash
+cd /root/lore-crystal
+docker compose up --build
+```
+
+Notes:
+
+- The `backend` service listens on port `8000` and the `frontend` (Vite) uses port `5173` by default.
+- Provide API keys via a `.env` file at the repository root (example below). The included `docker-compose.yaml` does not automatically inject the `.env` into containers; to pass secrets to containers either:
+  - add an `env_file` or `environment` section to the `backend` service in `docker-compose.yaml`, or
+  - export the variables in your shell before running `docker compose`.
+
+Example `docker-compose.yaml` snippet to pass `.env` into backend:
+
+```yaml
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./.env
+```
 
 ## API Endpoints
 
